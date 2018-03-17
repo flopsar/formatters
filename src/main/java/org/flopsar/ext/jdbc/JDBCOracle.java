@@ -4,17 +4,25 @@ import oracle.jdbc.internal.OraclePreparedStatement;
 import java.lang.reflect.Field;
 
 
+/**
+ * Instrument classes which implement oracle.jdbc.internal.OraclePreparedStatement
+ * Instrument methods:
+ * - boolean execute()
+ * - int executeUpdate()
+ * - java.sql.ResultSet executeQuery()
+ */
 public class JDBCOracle {
 
     private static final char PARAMETER_SEPARATOR = 0x1E;
+    
 
 
     public static String psql(Object[] o){
         try {
-            OraclePreparedStatement ps = (OraclePreparedStatement)o[0];
+            OraclePreparedStatement _this = (OraclePreparedStatement)o[0];
 
-            return "URL"+PARAMETER_SEPARATOR+ps.getConnection().getMetaData().getURL()
-                    +PARAMETER_SEPARATOR+"SQL"+PARAMETER_SEPARATOR+ps.getOriginalSql();
+            return "URL"+PARAMETER_SEPARATOR+_this.getConnection().getMetaData().getURL()
+                    +PARAMETER_SEPARATOR+"SQL"+PARAMETER_SEPARATOR+_this.getOriginalSql();
         }
         catch(Throwable ex){
             return "NA";
@@ -27,16 +35,16 @@ public class JDBCOracle {
     public static String param_psql(Object[] o){
         try {
 
-            OraclePreparedStatement ps = (OraclePreparedStatement)o[0];
+            OraclePreparedStatement _this = (OraclePreparedStatement)o[0];
             StringBuilder sb = new StringBuilder("URL");
             sb.append(PARAMETER_SEPARATOR);
-            sb.append(ps.getConnection().getMetaData().getURL());
+            sb.append(_this.getConnection().getMetaData().getURL());
             sb.append(PARAMETER_SEPARATOR);
             sb.append("SQL");
             sb.append(PARAMETER_SEPARATOR);
-            sb.append(ps.getOriginalSql());
+            sb.append(_this.getOriginalSql());
 
-            Class<?> c = ps.getClass();
+            Class<?> c = _this.getClass();
             Field params = null;
 
             try {
@@ -54,7 +62,7 @@ public class JDBCOracle {
             }
 
             params.setAccessible(true);
-            String[][] pa = (String[][])params.get(ps);
+            String[][] pa = (String[][])params.get(_this);
 
             if(pa != null){
                 for(int i=0;i<pa.length;i++){
@@ -71,7 +79,7 @@ public class JDBCOracle {
 
             params = c.getDeclaredField("parameterInt");
             params.setAccessible(true);
-            int[][] pi = (int[][])params.get(ps);
+            int[][] pi = (int[][])params.get(_this);
 
             if(pi != null){
                 for(int i=0;i<pi.length;i++){
