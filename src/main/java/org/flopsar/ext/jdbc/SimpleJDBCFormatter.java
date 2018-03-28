@@ -1,6 +1,5 @@
 package org.flopsar.ext.jdbc;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 
@@ -48,8 +47,7 @@ public class SimpleJDBCFormatter {
     }
 
 
-
-
+   
 
     private static String formatStatement(Statement statement){
         try {
@@ -62,10 +60,22 @@ public class SimpleJDBCFormatter {
 
 
 
-    public static String formatPreparedStatement(Object[] input){
+    public static String formatPrepareStatement(Object[] input){
         try {
-            Object _this = input[0];
-            PreparedStatement ps = (PreparedStatement)input[1];
+            String ps = (String)input[1];
+            SQL.set(ps);
+
+            return "SQL"+ SEPARATOR +ps;
+        } catch (Throwable e) {
+            return "Error"+ SEPARATOR +e.getMessage();
+        }
+    }
+
+
+
+    public static String formatExecutePreparedStatement(Object[] input){
+        try {
+            PreparedStatement ps = (PreparedStatement)input[0];
             String ssql = SQL.get();
 
             return "URL"+ SEPARATOR +ps.getConnection().getMetaData().getURL()

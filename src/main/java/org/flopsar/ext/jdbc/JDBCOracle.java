@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 public class JDBCOracle {
 
     private static final char PARAMETER_SEPARATOR = 0x1E;
-    
+
 
 
     public static String psql(Object[] o){
